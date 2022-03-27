@@ -23,24 +23,20 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress insideThermometer, outsideThermometer;
 
 
-// Assign address manually. The addresses below will need to be changed
-// to valid device addresses on your bus. Device address can be retrieved
-// by using either oneWire.search(deviceAddress) or individually via
-// sensors.getAddress(deviceAddress, index)
-// DeviceAddress insideThermometer = { 0x28, 0x1D, 0x39, 0x31, 0x2, 0x0, 0x0, 0xF0 };
-// DeviceAddress outsideThermometer   = { 0x28, 0x3F, 0x1C, 0x31, 0x2, 0x0, 0x0, 0x2 };
-
 void setup(void)
 {  
+
   wifiConnect(); // Branchement au WIFI 
   MQTTConnect(); // Branchement au broker MQTT 
+
+  appendPayloadString("Mac Adress ", MacAdress);   //Ajout de la donnee Temperature au message MQTT
+  sendPayloadString(); //Envoie du message via le protocole MQTT
+
   // start serial port
   Serial.begin(9600);
 
   // Start up the library
   sensors.begin();
-  appendPayloadString("Mac Adress ", MacAdress);  
-  sendPayloadString();  //Envoie du message via le protocole MQTT
 
   // locate devices on the bus
   Serial.print("Locating devices...");
@@ -59,22 +55,9 @@ void setup(void)
   // the devices on your bus (and assuming they don't change).
   //
   // method 1: by index
+
   if (!sensors.getAddress(insideThermometer, 0)) Serial.println("Unable to find address for Device 0");
   if (!sensors.getAddress(outsideThermometer, 1)) Serial.println("Unable to find address for Device 1");
-
-  // method 2: search()
-  // search() looks for the next device. Returns 1 if a new address has been
-  // returned. A zero might mean that the bus is shorted, there are no devices,
-  // or you have already retrieved all of them. It might be a good idea to
-  // check the CRC to make sure you didn't get garbage. The order is
-  // deterministic. You will always get the same devices in the same order
-  //
-  // Must be called before search()
-  //oneWire.reset_search();
-  // assigns the first address found to insideThermometer
-  //if (!oneWire.search(insideThermometer)) Serial.println("Unable to find address for insideThermometer");
-  // assigns the seconds address found to outsideThermometer
-  //if (!oneWire.search(outsideThermometer)) Serial.println("Unable to find address for outsideThermometer");
 
   // show the addresses we found on the bus
   Serial.print("Device 0 Address: ");
@@ -88,7 +71,7 @@ void setup(void)
   // set the resolution to 9 bit per device
   sensors.setResolution(insideThermometer, TEMPERATURE_PRECISION);
   sensors.setResolution(outsideThermometer, TEMPERATURE_PRECISION);
-
+ 
   Serial.print("Device 0 Resolution: ");
   Serial.print(sensors.getResolution(insideThermometer), DEC);
   Serial.println();
@@ -96,6 +79,7 @@ void setup(void)
   Serial.print("Device 1 Resolution: ");
   Serial.print(sensors.getResolution(outsideThermometer), DEC);
   Serial.println();
+
 }
 
 // function to print a device address
@@ -108,6 +92,8 @@ void printAddress(DeviceAddress deviceAddress)
     if (deviceAddress[i] < 16) adresse += '0';
     adresse += String(deviceAddress[i], HEX);
   }
+
+  Serial.print(adresse);
 }
 
 
@@ -125,9 +111,11 @@ void SendData(DeviceAddress deviceAddress)
   
   printAddress(deviceAddress);
   float tempC = sensors.getTempC(deviceAddress);
+  Serial.print(" Temperature : ");
+  Serial.println(tempC);
   adresse.toUpperCase();
-  appendPayload(adresse, tempC);
-  sendPayload();
+  appendPayload(adresse, tempC); //Ajout de la donnee Temperature au message MQTT
+  sendPayload();    //Envoie du message via le protocole MQTT
 }
 
 /*
@@ -137,8 +125,10 @@ void loop(void)
 {
    
   TempsActuel = millis(); 
+
   if (TempsActuel - TempsAvant > DelayRequest)
   {
+    
       // call sensors.requestTemperatures() to issue a global temperature
       // request to all devices on the bus
       Serial.print("Requesting temperatures...");
@@ -148,10 +138,9 @@ void loop(void)
       // print the device information
       SendData(insideThermometer);
       SendData(outsideThermometer);
+      Serial.println();
       TempsAvant = TempsActuel;
-     // appendPayload("MAC Adress", MacAdress);  //Ajout de la donnee au message MQTT
-      // sendPayload();  //Envoie du message via le protocole MQTT
-      
+
   }
   
 }

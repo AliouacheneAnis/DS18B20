@@ -1,3 +1,13 @@
+/*
+  Titre      : DS18B20
+  Auteur     : Anis Aliouachene
+  Date       : 27/03/2022
+  Description: Un programme qui permet de capter la temperature a l'aide des capteurs DS18B20 et l'envoie de leurs ID sur ThingsBoard 
+  et aussi l'envoie de la Mac Address du Uc sur ThingsBoard 
+  Version    : 0.0.1
+*/
+
+
 // Include the libraries we need
 #include <WIFIConnector_MKR1010.h>
 #include "MQTTConnector.h"

@@ -11,21 +11,25 @@
 
 //  Impression de l'adresse MAC du uC
 
-String MacAdress; 
+String MacAdress ; 
 
 void printMacAddress(byte mac[]) {
+  MacAdress = ""; 
   for (int i = 5; i >= 0; i--) {
     if (mac[i] < 16) {
       Serial.print('0');
       MacAdress += '0';
-    }
-    Serial.print(mac[i], HEX);
-    MacAdress += String(mac[i], HEX);
+    } 
+       Serial.print(mac[i], HEX);
+       String Char = String(mac[i], HEX);
+       MacAdress += Char; 
     if (i > 0) {
       Serial.print(":");
       MacAdress += ':';
     }
+
   }
+  MacAdress.toUpperCase();
   Serial.println();
 }
 

@@ -5,6 +5,7 @@
   Description: Un programme qui permet de capter la temperature a l'aide des capteurs DS18B20 et l'envoie de leurs ID sur ThingsBoard 
   et aussi l'envoie de la Mac Address du Uc sur ThingsBoard 
   Version    : 0.0.1
+  Source : Dallas library exemple modified 
 */
 
 
@@ -18,10 +19,12 @@
 
 // Data wire is plugged into port 2 on the Arduino
 #define ONE_WIRE_BUS 2
+
 #define TEMPERATURE_PRECISION 9
 void printAddress(DeviceAddress deviceAddress); 
 String adresse; 
-unsigned long TempsActuel, TempsAvant, DelayRequest = 5000; 
+unsigned long TempsActuel, TempsAvant; 
+const int DelayRequest = 5000; 
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);

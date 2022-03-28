@@ -21,7 +21,7 @@
 #define TEMPERATURE_PRECISION 9
 void printAddress(DeviceAddress deviceAddress); 
 String adresse; 
-unsigned long TempsActuel, TempsAvant, DelayRequest = 10000; 
+unsigned long TempsActuel, TempsAvant, DelayRequest = 5000; 
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
@@ -100,7 +100,8 @@ void printAddress(DeviceAddress deviceAddress)
   {
     // zero pad the address if necessary
     if (deviceAddress[i] < 16) adresse += '0';
-    adresse += String(deviceAddress[i], HEX);
+    adresse += String(deviceAddress[i], HEX);    // Transformation d'adresse en string a l'aide de la fonction String qui prend en paramettres 
+                                                 // un tableau et le type hex et a chaque fois on rajouter le caractere pour construre a la fin l'adresse complete 
   }
 
   Serial.print(adresse);
@@ -149,6 +150,7 @@ void loop(void)
       SendData(insideThermometer);
       SendData(outsideThermometer);
       Serial.println();
+      
       TempsAvant = TempsActuel;
 
   }
